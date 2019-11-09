@@ -1,0 +1,3 @@
+project=released_today
+test=rspec
+template=erb

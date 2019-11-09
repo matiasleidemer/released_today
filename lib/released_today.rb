@@ -1,0 +1,2 @@
+module ReleasedToday
+end
