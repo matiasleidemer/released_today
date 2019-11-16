@@ -80,12 +80,23 @@ module Web
       #           A Hash with options
       #
       # See: http://www.rubydoc.info/gems/rack/Rack/Session/Cookie
-      #
-      # sessions :cookie, secret: ENV['WEB_SESSIONS_SECRET']
+
+      sessions :cookie, secret: ENV['WEB_SESSIONS_SECRET']
 
       # Configure Rack middleware for this application
       #
       # middleware.use Rack::Protection
+
+      middleware.use OmniAuth::Builder do
+        provider :spotify,
+          ENV.fetch('SPOTIFY_CLIENT_ID'),
+          ENV.fetch('SPOTIFY_CLIENT_SECRET'),
+          scope: ENV.fetch('SPOTIFY_SCOPE').split(' ')
+      end
+
+      OmniAuth.config.on_failure = Proc.new { |env|
+        Web::Controllers::Session::Failure.new.call(env)
+      }
 
       # Default format for the requests that don't specify an HTTP_ACCEPT header
       # Argument: A symbol representation of a mime type, defaults to :html
